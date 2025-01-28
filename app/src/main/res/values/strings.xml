@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Bosta_Assessment</string>
+    <string name="choose_the_delivery_area">Choose the delivery area</string>
+    <string name="city_area">City/Area</string>
+</resources>
