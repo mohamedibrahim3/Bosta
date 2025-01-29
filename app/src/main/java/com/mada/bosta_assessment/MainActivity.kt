@@ -7,17 +7,19 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mada.bosta_assessment.adapter.CityAdapter
 import com.mada.bosta_assessment.adapter.DistrictAdapter
 import com.mada.bosta_assessment.databinding.ActivityMainBinding
 import com.mada.bosta_assessment.viewModel.CityViewModel
 import com.mada.domain.entity.City
 import dagger.hilt.android.AndroidEntryPoint
-
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -26,72 +28,36 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: CityViewModel by viewModels()
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var districtAdapter: DistrictAdapter
+    private lateinit var adapter: CityAdapter
     private var cities: List<City> = emptyList()
     private var selectedCity: City? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
+        adapter = CityAdapter(emptyList())
 
-        setupUI()
-        observeViewModel()
-    }
+        binding.recyclerViewCity.adapter = adapter
+        binding.recyclerViewCity.layoutManager = LinearLayoutManager(this)
 
-    private fun setupUI(){
-
-        //Setup RecyclerView
-        districtAdapter = DistrictAdapter(emptyList())
-        binding.recyclerViewDistricts.layoutManager = LinearLayoutManager(this)
-        binding.recyclerViewDistricts.adapter = districtAdapter
-
-        // Setup SearchBar interaction
-        binding.searchView.setOnClickListener {
-            // عند النقر على SearchBar، قم بإظهار Spinner
-            binding.spinnerCities.visibility = View.VISIBLE
-        }
-
-        // التعامل مع تغيير النص في SearchBar
-        val searchText = binding.searchView
-            .findViewById<EditText>(com.google.android.material.R.id.search_bar)
-        searchText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // تصفية القائمة بناءً على النص المدخل
-                val query = s?.toString() ?: ""
-                val filteredCities = cities.filter { it.name.contains(query, ignoreCase = true) }
-                updateCitySpinner(filteredCities)
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter(newText ?: "")
+                return true
+            }
         })
 
-        // Setup Spinner
-        binding.spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                selectedCity = cities[position]
-                viewModel.filterDistricts(selectedCity!!, "")
-            }
+        viewModel.cities.observe(this, Observer { cities ->
+            adapter = CityAdapter(cities)
+            binding.recyclerViewCity.adapter = adapter
+        })
 
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-    }
-    private fun observeViewModel() {
-        viewModel.cities.observe(this) { cityList ->
-            cities = cityList
-            updateCitySpinner(cities)
-        }
-
-        viewModel.filteredDistricts.observe(this) { filteredList ->
-            districtAdapter.updateData(filteredList)
-        }
-    }
-
-    private fun updateCitySpinner(cityList: List<City>) {
-        val cityNames = cityList.map { it.name }
-        spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cityNames)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerCities.adapter = spinnerAdapter
+        viewModel.fetchCities()
     }
 }

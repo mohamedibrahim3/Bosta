@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.mada.data"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -41,31 +42,23 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-
-
-    // Room
-    kapt (libs.androidx.room.compiler)
-    implementation (libs.androidx.room.ktx)
-    implementation (libs.androidx.room.runtime)
-    androidTestImplementation (libs.androidx.room.testing)
-
-
     //Dagger
     implementation (libs.dagger)
     kapt (libs.dagger.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    // Lifecycle (ViewModel, LiveData)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
 
-    // Hilt - Android
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-
-    // Retrofit and Gson
+    // Coroutines
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    // Retrofit & Gson
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
 
-    // Coroutines
-    implementation (libs.kotlinx.coroutines.core.v173)
-    implementation (libs.kotlinx.coroutines.android.v173)
-
     implementation(project(":domain"))
+
+
 }

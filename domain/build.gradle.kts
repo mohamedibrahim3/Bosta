@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.mada.domain"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -45,16 +46,9 @@ dependencies {
     //Dagger
     implementation (libs.dagger)
     kapt (libs.dagger.compiler)
-
-    // Hilt - Android
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-
-    // Retrofit and Gson
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
     // Coroutines
-    implementation (libs.kotlinx.coroutines.core.v173)
-    implementation (libs.kotlinx.coroutines.android.v173)
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
 }

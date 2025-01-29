@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -17,7 +18,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 
@@ -50,43 +51,29 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Hilt - ViewModel
-    implementation (libs.androidx.hilt.lifecycle.viewmodel)
-    kapt (libs.androidx.hilt.compiler)
-    implementation (libs.androidx.lifecycle.extensions)
-    implementation (libs.androidx.lifecycle.runtime.ktx.v262)
-    implementation (libs.androidx.lifecycle.livedata.ktx.v262)
-    implementation (libs.androidx.lifecycle.common.java8.v262)
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
-
-    //  Recycler View
-    implementation ("androidx.recyclerview:recyclerview:1.3.2")
-    implementation ("androidx.recyclerview:recyclerview-selection:1.1.0")
     //Dagger
     implementation (libs.dagger)
     kapt (libs.dagger.compiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    // Lifecycle (ViewModel, LiveData)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
 
-    // Hilt - Android
-    implementation (libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-
-    // Retrofit and Gson
+    // Coroutines
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    // Retrofit & Gson
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
 
-    // Coroutines
-    implementation (libs.kotlinx.coroutines.core.v173)
-    implementation (libs.kotlinx.coroutines.android.v173)
+    // RecyclerView
+    implementation (libs.androidx.recyclerview)
 
-    // Room
-    kapt (libs.androidx.room.compiler)
-    implementation (libs.androidx.room.ktx)
-    implementation (libs.androidx.room.runtime)
-    androidTestImplementation (libs.androidx.room.testing)
+    // Material Design
+    implementation(libs.material)
 
-    implementation (libs.material.v160)
-
-
+    // Local modules
     implementation(project(":data"))
     implementation(project(":domain"))
 
