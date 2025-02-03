@@ -42,7 +42,7 @@ class ExpandableCityAdapter(
         notifyDataSetChanged()
     }
 
-    // تحديث البيانات
+   
     fun updateData(newCities: List<Cities.Data>) {
         cities = newCities
         filteredCities = newCities
